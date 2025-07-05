@@ -1,4 +1,4 @@
-package model.entity;
+package br.com.studiyng.crud.jz.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,17 +14,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Costumer implements Serializable {
+public class Customer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String nome;
+    private String name;
     @Column(length=11)
     private Integer cpf;
     @Column
-    private Integer tel;
+    private Integer phone;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
@@ -32,5 +32,13 @@ public class Costumer implements Serializable {
     // Relacionamento 1:N com Endereço
     @OneToMany(mappedBy = "costumer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Address> addresses;
+
+    public void enableCustomer() {
+        this.active = true;
+    }
+
+    public void disableCustomer() {
+        this.active = false;
+    }
 
 }

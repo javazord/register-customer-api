@@ -1,4 +1,4 @@
-package model.entity;
+package br.com.studiyng.crud.jz.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,17 +19,17 @@ public class Address implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String rua;
+    private String street;
     @Column
-    private String bairro;
+    private String district;
     @Column(length=20)
-    private String cidade;
+    private String city;
     @Column(length=2)
-    private String estado;
+    private String state;
     @Column(length=10)
-    private String cep;
+    private String zipCode;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "costumer_id")
-    private Costumer costumer;
+    private Customer customer;
 
 }
