@@ -29,7 +29,7 @@ public class Address implements Serializable {
     @Column(length=10)
     private String zipCode;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "costumer_id")
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
 }

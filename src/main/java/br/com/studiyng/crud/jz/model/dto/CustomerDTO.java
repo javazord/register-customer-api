@@ -9,8 +9,8 @@ public class CustomerDTO {
 
     private Long id;
     private String name;
-    private Integer cpf;
-    private Integer phone;
+    private String cpf;
+    private String phone;
     private String email;
     private Boolean active;
     private List<AddressDTO> addresses;

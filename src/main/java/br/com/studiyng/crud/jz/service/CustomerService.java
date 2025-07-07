@@ -43,7 +43,7 @@ public class CustomerService {
         existingCustomer.setName(customerDTO.getName());
         existingCustomer.setEmail(customerDTO.getEmail());
         existingCustomer.setPhone(customerDTO.getPhone());
-
+        existingCustomer.setCpf(customerDTO.getCpf());
         // Remove old addresses and set new ones
         existingCustomer.getAddresses().clear();
         List<Address> newAddresses = customerDTO.getAddresses()
@@ -53,6 +53,7 @@ public class CustomerService {
                     address.setStreet(dto.getStreet());
                     address.setCity(dto.getCity());
                     address.setState(dto.getState());
+                    address.setDistrict(dto.getDistrict());
                     address.setZipCode(dto.getZipCode());
                     address.setCustomer(existingCustomer);
                     return address;
@@ -64,13 +65,13 @@ public class CustomerService {
     }
 
     public void enableCustomer(Long id) {
-        Customer c = (Customer) customerRepository.getCustomerById(id);
+        Customer c = customerRepository.getCustomerById(id);
         c.enableCustomer();
         customerRepository.save(c);
     }
 
     public void disableCustomer(Long id) {
-        Customer c = (Customer) customerRepository.getCustomerById(id);
+        Customer c = customerRepository.getCustomerById(id);
         c.disableCustomer();
         customerRepository.save(c);
     }
@@ -81,16 +82,18 @@ public class CustomerService {
         dto.setName(customer.getName());
         dto.setEmail(customer.getEmail());
         dto.setPhone(customer.getPhone());
+        dto.setCpf(customer.getCpf());
         List<AddressDTO> addressDTOs = customer.getAddresses().stream().map(addr -> {
             AddressDTO addressDTO = new AddressDTO();
             addressDTO.setId(addr.getId());
             addressDTO.setStreet(addr.getStreet());
+            addressDTO.setDistrict(addr.getDistrict());
             addressDTO.setCity(addr.getCity());
             addressDTO.setState(addr.getState());
             addressDTO.setZipCode(addr.getZipCode());
-            addressDTO.setCustomer(addr.getCustomer());
             return addressDTO;
         }).collect(Collectors.toList());
+        dto.setActive(true);
         dto.setAddresses(addressDTOs);
         return dto;
     }
@@ -100,15 +103,18 @@ public class CustomerService {
         customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
+        customer.setCpf(dto.getCpf());
         List<Address> addresses = dto.getAddresses().stream().map(addressDTO -> {
             Address address = new Address();
             address.setStreet(addressDTO.getStreet());
             address.setCity(addressDTO.getCity());
             address.setState(addressDTO.getState());
+            address.setDistrict(addressDTO.getDistrict());
             address.setZipCode(addressDTO.getZipCode());
             address.setCustomer(customer);
             return address;
         }).collect(Collectors.toList());
+        customer.setActive(true);
         customer.setAddresses(addresses);
         return customer;
     }

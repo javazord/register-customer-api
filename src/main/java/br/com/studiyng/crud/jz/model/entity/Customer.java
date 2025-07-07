@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,16 +22,16 @@ public class Customer implements Serializable {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(length=11)
-    private Integer cpf;
     @Column
-    private Integer phone;
+    private String cpf;
+    @Column
+    private String phone;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private Boolean active;
     // Relacionamento 1:N com Endereço
-    @OneToMany(mappedBy = "costumer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Address> addresses;
 
     public void enableCustomer() {
