@@ -41,6 +41,7 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         existingCustomer.setName(customerDTO.getName());
+        existingCustomer.setLastName(customerDTO.getLastName());
         existingCustomer.setEmail(customerDTO.getEmail());
         existingCustomer.setPhone(customerDTO.getPhone());
         existingCustomer.setCpf(customerDTO.getCpf());
@@ -80,6 +81,7 @@ public class CustomerService {
         CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
         dto.setName(customer.getName());
+        dto.setLastName(customer.getLastName());
         dto.setEmail(customer.getEmail());
         dto.setPhone(customer.getPhone());
         dto.setCpf(customer.getCpf());
@@ -101,6 +103,7 @@ public class CustomerService {
     private Customer mapToEntity(CustomerDTO dto) {
         Customer customer = new Customer();
         customer.setName(dto.getName());
+        customer.setLastName(dto.getLastName());
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
         customer.setCpf(dto.getCpf());
