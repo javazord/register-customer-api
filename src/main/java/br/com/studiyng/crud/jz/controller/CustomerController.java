@@ -1,5 +1,6 @@
 package br.com.studiyng.crud.jz.controller;
 
+import br.com.studiyng.crud.jz.exception.BusinessException;
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
 import br.com.studiyng.crud.jz.model.entity.Customer;
 import br.com.studiyng.crud.jz.service.CustomerService;
@@ -24,7 +25,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
+    public ResponseEntity<List<?>> getAllCustomers() {
         List<CustomerDTO> customers = customerService.getAllCustomers();
 
         if (customers.isEmpty()) {
@@ -36,13 +37,13 @@ public class CustomerController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
         CustomerDTO customerDTO = customerService.getCustomerById(id);
         return ResponseEntity.ok(customerDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id,
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id,
                                                       @RequestBody CustomerDTO customerDTO) {
         CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
         return ResponseEntity.ok(updatedCustomer);

@@ -23,12 +23,12 @@ public class CustomerService {
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = mapToEntity(customerDTO);
-        boolean exists  = customerRepository.getExistingCustomerByEmailOrCpf(customerDTO.getEmail(), customerDTO.getCpf());
-        if (exists){
-            throw new BusinessException("Customer already exists with cpf or email.");
+        boolean exists = customerRepository.existsCustomerByEmailOrCpf(customerDTO.getEmail(), customerDTO.getCpf());
+        if (exists) {
+            throw new BusinessException("Customer already exists with CPF or Email.");
         }
-            Customer saved = customerRepository.save(customer);
-            return mapToDTO(saved);
+        Customer saved = customerRepository.save(customer);
+        return mapToDTO(saved);
     }
 
     public List<CustomerDTO> getAllCustomers() {
