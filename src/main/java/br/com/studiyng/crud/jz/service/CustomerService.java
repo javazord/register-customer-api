@@ -8,6 +8,7 @@ import br.com.studiyng.crud.jz.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,19 +108,27 @@ public class CustomerService {
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
         customer.setCpf(dto.getCpf());
-        List<Address> addresses = dto.getAddresses().stream().map(addressDTO -> {
-            Address address = new Address();
-            address.setStreet(addressDTO.getStreet());
-            address.setCity(addressDTO.getCity());
-            address.setState(addressDTO.getState());
-            address.setDistrict(addressDTO.getDistrict());
-            address.setZipCode(addressDTO.getZipCode());
-            address.setCustomer(customer);
-            return address;
-        }).collect(Collectors.toList());
         customer.setActive(true);
-        customer.setAddresses(addresses);
+
+        if (dto.getAddresses() != null && !dto.getAddresses().isEmpty()) {
+            List<Address> addresses = dto.getAddresses().stream().map(addressDTO -> {
+                Address address = new Address();
+                address.setStreet(addressDTO.getStreet());
+                address.setCity(addressDTO.getCity());
+                address.setState(addressDTO.getState());
+                address.setDistrict(addressDTO.getDistrict());
+                address.setZipCode(addressDTO.getZipCode());
+                address.setCustomer(customer);
+                return address;
+            }).collect(Collectors.toList());
+
+            customer.setAddresses(addresses);
+        } else {
+            customer.setAddresses(Collections.emptyList());
+        }
+
         return customer;
     }
+
 
 }

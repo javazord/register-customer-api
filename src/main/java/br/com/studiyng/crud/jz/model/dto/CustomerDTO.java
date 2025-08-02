@@ -2,6 +2,7 @@ package br.com.studiyng.crud.jz.model.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,6 +15,7 @@ public class CustomerDTO {
     private String phone;
     private String email;
     private Boolean active;
-    private List<AddressDTO> addresses;
+    private List<AddressDTO> addresses = new ArrayList<>();
+
 
 }

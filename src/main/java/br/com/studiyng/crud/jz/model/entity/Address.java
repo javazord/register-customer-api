@@ -24,7 +24,7 @@ public class Address implements Serializable {
     private String district;
     @Column(length=20)
     private String city;
-    @Column(length=2)
+    @Column
     private String state;
     @Column(length=10)
     private String zipCode;
