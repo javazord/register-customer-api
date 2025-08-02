@@ -1,5 +1,7 @@
 package br.com.studiyng.crud.jz.service;
 
+import br.com.studiyng.crud.jz.exception.BusinessException;
+import br.com.studiyng.crud.jz.exception.ResourceNotFoundException;
 import br.com.studiyng.crud.jz.model.dto.AddressDTO;
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
 import br.com.studiyng.crud.jz.model.entity.Address;
@@ -21,8 +23,12 @@ public class CustomerService {
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         Customer customer = mapToEntity(customerDTO);
-        Customer savedCustomer = customerRepository.save(customer);
-        return mapToDTO(savedCustomer);
+        boolean exists  = customerRepository.getExistingCustomerByEmailOrCpf(customerDTO.getEmail(), customerDTO.getCpf());
+        if (exists){
+            throw new BusinessException("Customer already exists with cpf or email.");
+        }
+            Customer saved = customerRepository.save(customer);
+            return mapToDTO(saved);
     }
 
     public List<CustomerDTO> getAllCustomers() {
@@ -34,13 +40,13 @@ public class CustomerService {
 
     public CustomerDTO getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
         return mapToDTO(customer);
     }
 
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer existingCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
         updateCustomerData(existingCustomer, customerDTO);
 

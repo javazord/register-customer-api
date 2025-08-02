@@ -1,8 +1,11 @@
 package br.com.studiyng.crud.jz.controller;
 
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
+import br.com.studiyng.crud.jz.model.entity.Customer;
 import br.com.studiyng.crud.jz.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,23 +18,35 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        return customerService.createCustomer(customerDTO);
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
+        CustomerDTO created = customerService.createCustomer(customerDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping
-    public List<CustomerDTO> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
+        List<CustomerDTO> customers = customerService.getAllCustomers();
+
+        if (customers.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(customers);
     }
 
+
     @GetMapping("/{id}")
-    public CustomerDTO getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+        CustomerDTO customerDTO = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customerDTO);
     }
 
     @PutMapping("/{id}")
-    public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
-        return customerService.updateCustomer(id, customerDTO);
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id,
+                                                      @RequestBody CustomerDTO customerDTO) {
+        CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
+        return ResponseEntity.ok(updatedCustomer);
     }
+
 
 }
