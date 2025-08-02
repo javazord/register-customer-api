@@ -28,8 +28,8 @@ public class Address implements Serializable {
     private String state;
     @Column(length=10)
     private String zipCode;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", unique = true, nullable = false)
     private Customer customer;
 
 }

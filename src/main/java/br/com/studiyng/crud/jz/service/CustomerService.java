@@ -5,6 +5,7 @@ import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
 import br.com.studiyng.crud.jz.model.entity.Address;
 import br.com.studiyng.crud.jz.model.entity.Customer;
 import br.com.studiyng.crud.jz.repository.CustomerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,43 +40,36 @@ public class CustomerService {
 
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer existingCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + id));
 
-        existingCustomer.setName(customerDTO.getName());
-        existingCustomer.setLastName(customerDTO.getLastName());
-        existingCustomer.setEmail(customerDTO.getEmail());
-        existingCustomer.setPhone(customerDTO.getPhone());
-        existingCustomer.setCpf(customerDTO.getCpf());
-        // Remove old addresses and set new ones
-        existingCustomer.getAddresses().clear();
-        List<Address> newAddresses = customerDTO.getAddresses()
-                .stream()
-                .map(dto -> {
-                    Address address = new Address();
-                    address.setStreet(dto.getStreet());
-                    address.setCity(dto.getCity());
-                    address.setState(dto.getState());
-                    address.setDistrict(dto.getDistrict());
-                    address.setZipCode(dto.getZipCode());
-                    address.setCustomer(existingCustomer);
-                    return address;
-                }).collect(Collectors.toList());
-        existingCustomer.getAddresses().addAll(newAddresses);
+        updateCustomerData(existingCustomer, customerDTO);
 
         Customer updatedCustomer = customerRepository.save(existingCustomer);
         return mapToDTO(updatedCustomer);
     }
 
-    public void enableCustomer(Long id) {
-        Customer c = customerRepository.getCustomerById(id);
-        c.enableCustomer();
-        customerRepository.save(c);
-    }
+    private void updateCustomerData(Customer customer, CustomerDTO dto) {
+        customer.setName(dto.getName());
+        customer.setLastName(dto.getLastName());
+        customer.setEmail(dto.getEmail());
+        customer.setPhone(dto.getPhone());
+        customer.setCpf(dto.getCpf());
 
-    public void disableCustomer(Long id) {
-        Customer c = customerRepository.getCustomerById(id);
-        c.disableCustomer();
-        customerRepository.save(c);
+        Address address = customer.getAddress();
+
+        if (address == null) {
+            address = new Address();
+            address.setCustomer(customer);
+        }
+
+        AddressDTO addressDTO = dto.getAddress();
+        address.setStreet(addressDTO.getStreet());
+        address.setState(addressDTO.getState());
+        address.setCity(addressDTO.getCity());
+        address.setDistrict(addressDTO.getDistrict());
+        address.setZipCode(addressDTO.getZipCode());
+
+        customer.setAddress(address);
     }
 
     private CustomerDTO mapToDTO(Customer customer) {
@@ -86,20 +80,22 @@ public class CustomerService {
         dto.setEmail(customer.getEmail());
         dto.setPhone(customer.getPhone());
         dto.setCpf(customer.getCpf());
-        List<AddressDTO> addressDTOs = customer.getAddresses().stream().map(addr -> {
+
+        Address address = customer.getAddress();
+        if (address != null) {
             AddressDTO addressDTO = new AddressDTO();
-            addressDTO.setId(addr.getId());
-            addressDTO.setStreet(addr.getStreet());
-            addressDTO.setDistrict(addr.getDistrict());
-            addressDTO.setCity(addr.getCity());
-            addressDTO.setState(addr.getState());
-            addressDTO.setZipCode(addr.getZipCode());
-            return addressDTO;
-        }).collect(Collectors.toList());
-        dto.setActive(true);
-        dto.setAddresses(addressDTOs);
+            addressDTO.setId(address.getId());
+            addressDTO.setStreet(address.getStreet());
+            addressDTO.setDistrict(address.getDistrict());
+            addressDTO.setCity(address.getCity());
+            addressDTO.setState(address.getState());
+            addressDTO.setZipCode(address.getZipCode());
+            dto.setAddress(addressDTO);
+        }
+
         return dto;
     }
+
 
     private Customer mapToEntity(CustomerDTO dto) {
         Customer customer = new Customer();
@@ -108,23 +104,17 @@ public class CustomerService {
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
         customer.setCpf(dto.getCpf());
-        customer.setActive(true);
 
-        if (dto.getAddresses() != null && !dto.getAddresses().isEmpty()) {
-            List<Address> addresses = dto.getAddresses().stream().map(addressDTO -> {
-                Address address = new Address();
-                address.setStreet(addressDTO.getStreet());
-                address.setCity(addressDTO.getCity());
-                address.setState(addressDTO.getState());
-                address.setDistrict(addressDTO.getDistrict());
-                address.setZipCode(addressDTO.getZipCode());
-                address.setCustomer(customer);
-                return address;
-            }).collect(Collectors.toList());
+        if (dto.getAddress() != null) {
+            Address address = new Address();
+            address.setStreet(dto.getAddress().getStreet());
+            address.setCity(dto.getAddress().getCity());
+            address.setState(dto.getAddress().getState());
+            address.setDistrict(dto.getAddress().getDistrict());
+            address.setZipCode(dto.getAddress().getZipCode());
+            address.setCustomer(customer);
 
-            customer.setAddresses(addresses);
-        } else {
-            customer.setAddresses(Collections.emptyList());
+            customer.setAddress(address);
         }
 
         return customer;

@@ -30,18 +30,8 @@ public class Customer implements Serializable {
     private String phone;
     @Column(unique = true, nullable = false)
     private String email;
-    @Column(nullable = false)
-    private Boolean active;
-    // Relacionamento 1:N com Endereço
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Address> addresses;
-
-    public void enableCustomer() {
-        this.active = true;
-    }
-
-    public void disableCustomer() {
-        this.active = false;
-    }
+    // Relacionamento 1:1 com Endereço
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Address address;
 
 }

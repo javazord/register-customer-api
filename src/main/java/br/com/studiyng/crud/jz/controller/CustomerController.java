@@ -34,14 +34,4 @@ public class CustomerController {
         return customerService.updateCustomer(id, customerDTO);
     }
 
-    @PutMapping("/enable/{id}")
-    public void enableCustomer(@PathVariable Long id) {
-        customerService.enableCustomer(id);
-    }
-
-    @PutMapping("/disable/{id}")
-    public void disableCustomer(@PathVariable Long id) {
-        customerService.disableCustomer(id);
-    }
-
 }

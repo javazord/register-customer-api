@@ -15,7 +15,7 @@ public class CustomerDTO {
     private String phone;
     private String email;
     private Boolean active;
-    private List<AddressDTO> addresses = new ArrayList<>();
+    private AddressDTO address;
 
 
 }
