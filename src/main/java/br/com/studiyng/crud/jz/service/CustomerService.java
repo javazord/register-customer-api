@@ -53,6 +53,12 @@ public class CustomerService {
         return mapToDTO(updatedCustomer);
     }
 
+    public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        customerRepository.delete(customer);
+    }
+
     private void updateCustomerData(Customer customer, CustomerDTO dto) {
         customer.setName(dto.getName());
         customer.setLastName(dto.getLastName());
@@ -100,7 +106,6 @@ public class CustomerService {
 
         return dto;
     }
-
 
     private Customer mapToEntity(CustomerDTO dto) {
         Customer customer = new Customer();
