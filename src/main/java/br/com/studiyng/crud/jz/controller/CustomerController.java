@@ -1,8 +1,6 @@
 package br.com.studiyng.crud.jz.controller;
 
-import br.com.studiyng.crud.jz.exception.BusinessException;
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
-import br.com.studiyng.crud.jz.model.entity.Customer;
 import br.com.studiyng.crud.jz.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +33,6 @@ public class CustomerController {
         return ResponseEntity.ok(customers);
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
         CustomerDTO customerDTO = customerService.getCustomerById(id);
@@ -48,6 +45,5 @@ public class CustomerController {
         CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
         return ResponseEntity.ok(updatedCustomer);
     }
-
 
 }
