@@ -9,8 +9,11 @@ import br.com.studiyng.crud.jz.model.entity.Customer;
 import br.com.studiyng.crud.jz.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,5 +133,12 @@ public class CustomerService {
         return customer;
     }
 
-
+    public List<Customer> search(String cpf, String email) {
+        Customer customer = new Customer();
+        customer.setCpf(cpf);
+        customer.setEmail(email);
+        Example<Customer> example = Example.of(customer,
+                ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        return customerRepository.findAll(example);
+    }
 }

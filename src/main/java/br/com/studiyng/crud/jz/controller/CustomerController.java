@@ -1,6 +1,8 @@
 package br.com.studiyng.crud.jz.controller;
 
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
+import br.com.studiyng.crud.jz.model.entity.Customer;
+import br.com.studiyng.crud.jz.model.mapper.CustomerMapper;
 import br.com.studiyng.crud.jz.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<?>> getAllCustomers() {
         List<CustomerDTO> customers = customerService.getAllCustomers();
 
@@ -31,6 +33,14 @@ public class CustomerController {
         }
 
         return ResponseEntity.ok(customers);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> search(@RequestParam (value = "cpf", required = false) String cpf,
+                                    @RequestParam (value = "email", required = false) String email){
+        List<Customer> customers = customerService.search(cpf, email);
+        List<CustomerDTO> customerDTOs = CustomerMapper.toDTOList(customers);
+        return ResponseEntity.ok(customerDTOs);
     }
 
     @GetMapping("/{id}")

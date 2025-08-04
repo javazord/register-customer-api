@@ -14,7 +14,6 @@ public class CustomerDTO {
     private String cpf;
     private String phone;
     private String email;
-    private Boolean active;
     private AddressDTO address;
 
 
