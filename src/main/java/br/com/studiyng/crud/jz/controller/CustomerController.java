@@ -35,6 +35,23 @@ public class CustomerController {
         return ResponseEntity.ok(customers);
     }
 
+    @GetMapping("/last-registers")
+    public ResponseEntity<List<?>> getAllLastTenCustomers() {
+        List<CustomerDTO> customers = customerService.getAllLastFiveCustomers();
+
+        if (customers.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(customers);
+    }
+
+    @GetMapping("/count-customers")
+    public ResponseEntity<?> countCustomer(){
+        long count = customerService.countAllCustomers();
+        return ResponseEntity.ok(count);
+    }
+
     @GetMapping
     public ResponseEntity<?> search(@RequestParam (value = "cpf", required = false) String cpf,
                                     @RequestParam (value = "email", required = false) String email){

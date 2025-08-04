@@ -8,5 +8,7 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Customer getCustomerById(Long id);
     boolean existsCustomerByEmailOrCpf(String email, String cpf);
-    List<Customer> findAllCustomersByEmailOrCpf(String email, String cpf);
+    List<Customer> findTop5ByOrderByIdDesc();
+    @Override
+    long count();
 }

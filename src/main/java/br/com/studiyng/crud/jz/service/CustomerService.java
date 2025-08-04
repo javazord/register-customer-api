@@ -14,6 +14,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,10 +35,13 @@ public class CustomerService {
     }
 
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll()
+        List<CustomerDTO> lastTenCustomers = customerRepository.findAll()
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+
+        Collections.reverse(lastTenCustomers);
+        return lastTenCustomers;
     }
 
     public CustomerDTO getCustomerById(Long id) {
@@ -62,28 +66,25 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
-    private void updateCustomerData(Customer customer, CustomerDTO dto) {
-        customer.setName(dto.getName());
-        customer.setLastName(dto.getLastName());
-        customer.setEmail(dto.getEmail());
-        customer.setPhone(dto.getPhone());
-        customer.setCpf(dto.getCpf());
+    public long countAllCustomers() {
+        return customerRepository.count();
+    }
 
-        Address address = customer.getAddress();
+    public List<CustomerDTO> getAllLastFiveCustomers() {
+        List<CustomerDTO> lastTenCustomers = customerRepository.findTop5ByOrderByIdDesc()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+        return lastTenCustomers;
+    }
 
-        if (address == null) {
-            address = new Address();
-            address.setCustomer(customer);
-        }
-
-        AddressDTO addressDTO = dto.getAddress();
-        address.setStreet(addressDTO.getStreet());
-        address.setState(addressDTO.getState());
-        address.setCity(addressDTO.getCity());
-        address.setDistrict(addressDTO.getDistrict());
-        address.setZipCode(addressDTO.getZipCode());
-
-        customer.setAddress(address);
+    public List<Customer> search(String cpf, String email) {
+        Customer customer = new Customer();
+        customer.setCpf(cpf);
+        customer.setEmail(email);
+        Example<Customer> example = Example.of(customer,
+                ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        return customerRepository.findAll(example);
     }
 
     private CustomerDTO mapToDTO(Customer customer) {
@@ -133,12 +134,28 @@ public class CustomerService {
         return customer;
     }
 
-    public List<Customer> search(String cpf, String email) {
-        Customer customer = new Customer();
-        customer.setCpf(cpf);
-        customer.setEmail(email);
-        Example<Customer> example = Example.of(customer,
-                ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
-        return customerRepository.findAll(example);
+    private void updateCustomerData(Customer customer, CustomerDTO dto) {
+        customer.setName(dto.getName());
+        customer.setLastName(dto.getLastName());
+        customer.setEmail(dto.getEmail());
+        customer.setPhone(dto.getPhone());
+        customer.setCpf(dto.getCpf());
+
+        Address address = customer.getAddress();
+
+        if (address == null) {
+            address = new Address();
+            address.setCustomer(customer);
+        }
+
+        AddressDTO addressDTO = dto.getAddress();
+        address.setStreet(addressDTO.getStreet());
+        address.setState(addressDTO.getState());
+        address.setCity(addressDTO.getCity());
+        address.setDistrict(addressDTO.getDistrict());
+        address.setZipCode(addressDTO.getZipCode());
+
+        customer.setAddress(address);
     }
+
 }
