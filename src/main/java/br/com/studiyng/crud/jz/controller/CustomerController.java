@@ -55,9 +55,8 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<?> search(@RequestParam (value = "cpf", required = false) String cpf,
                                     @RequestParam (value = "email", required = false) String email){
-        List<Customer> customers = customerService.search(cpf, email);
-        List<CustomerDTO> customerDTOs = CustomerMapper.toDTOList(customers);
-        return ResponseEntity.ok(customerDTOs);
+        List<CustomerDTO> customers = customerService.search(cpf, email);
+        return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/{id}")

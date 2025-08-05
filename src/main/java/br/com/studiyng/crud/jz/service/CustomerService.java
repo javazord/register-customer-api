@@ -6,6 +6,7 @@ import br.com.studiyng.crud.jz.model.dto.AddressDTO;
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
 import br.com.studiyng.crud.jz.model.entity.Address;
 import br.com.studiyng.crud.jz.model.entity.Customer;
+import br.com.studiyng.crud.jz.model.mapper.CustomerMapper;
 import br.com.studiyng.crud.jz.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,6 @@ public class CustomerService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
-
         Collections.reverse(lastTenCustomers);
         return lastTenCustomers;
     }
@@ -78,13 +78,17 @@ public class CustomerService {
         return lastTenCustomers;
     }
 
-    public List<Customer> search(String cpf, String email) {
+    public List<CustomerDTO> search(String cpf, String email) {
         Customer customer = new Customer();
+
         customer.setCpf(cpf);
         customer.setEmail(email);
         Example<Customer> example = Example.of(customer,
                 ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
-        return customerRepository.findAll(example);
+        List<Customer> customers = customerRepository.findAll(example);
+        List<CustomerDTO> customerDTOs = CustomerMapper.toDTOList(customers);
+        Collections.reverse(customerDTOs);
+        return customerDTOs;
     }
 
     private CustomerDTO mapToDTO(Customer customer) {
