@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    Customer getCustomerById(Long id);
     boolean existsCustomerByEmailOrCpf(String email, String cpf);
     List<Customer> findTop5ByOrderByIdDesc();
     @Override
