@@ -14,50 +14,52 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
+
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+        this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
+    }
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
-        Customer customer = mapToEntity(customerDTO);
+        Customer customer = customerMapper.toEntity(customerDTO);
         boolean exists = customerRepository.existsCustomerByEmailOrCpf(customerDTO.getEmail(), customerDTO.getCpf());
         if (exists) {
             throw new BusinessException("Customer already exists with CPF or Email.");
         }
         Customer saved = customerRepository.save(customer);
-        return mapToDTO(saved);
+        return customerMapper.toDTO(saved);
     }
 
     public List<CustomerDTO> getAllCustomers() {
-        List<CustomerDTO> lastTenCustomers = customerRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-        Collections.reverse(lastTenCustomers);
-        return lastTenCustomers;
+        List<Customer> customers = customerRepository.findAll();
+        List<CustomerDTO> customerDTOS = customerMapper.toDTO(customers);
+        Collections.reverse(customerDTOS);
+        return customerDTOS;
     }
 
     public CustomerDTO getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
-        return mapToDTO(customer);
+        return customerMapper.toDTO(customer);
     }
 
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
-        updateCustomerData(existingCustomer, customerDTO);
+        customerMapper.updateEntityFromDTO(customerDTO, existingCustomer);
 
         Customer updatedCustomer = customerRepository.save(existingCustomer);
-        return mapToDTO(updatedCustomer);
+        return customerMapper.toDTO(updatedCustomer);
     }
 
     public void deleteCustomer(Long id) {
@@ -71,11 +73,8 @@ public class CustomerService {
     }
 
     public List<CustomerDTO> getAllLastFiveCustomers() {
-        List<CustomerDTO> lastTenCustomers = customerRepository.findTop5ByOrderByIdDesc()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-        return lastTenCustomers;
+        List<Customer> customers = customerRepository.findTop5ByOrderByIdDesc();
+        return customerMapper.toDTO(customers);
     }
 
     public List<CustomerDTO> search(String cpf, String email) {
@@ -86,80 +85,10 @@ public class CustomerService {
         Example<Customer> example = Example.of(customer,
                 ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
         List<Customer> customers = customerRepository.findAll(example);
-        List<CustomerDTO> customerDTOs = CustomerMapper.toDTOList(customers);
+        List<CustomerDTO> customerDTOs = customerMapper.toDTO(customers);
         Collections.reverse(customerDTOs);
         return customerDTOs;
     }
 
-    private CustomerDTO mapToDTO(Customer customer) {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setId(customer.getId());
-        dto.setName(customer.getName());
-        dto.setLastName(customer.getLastName());
-        dto.setEmail(customer.getEmail());
-        dto.setPhone(customer.getPhone());
-        dto.setCpf(customer.getCpf());
-
-        Address address = customer.getAddress();
-        if (address != null) {
-            AddressDTO addressDTO = new AddressDTO();
-            addressDTO.setId(address.getId());
-            addressDTO.setStreet(address.getStreet());
-            addressDTO.setDistrict(address.getDistrict());
-            addressDTO.setCity(address.getCity());
-            addressDTO.setState(address.getState());
-            addressDTO.setZipCode(address.getZipCode());
-            dto.setAddress(addressDTO);
-        }
-
-        return dto;
-    }
-
-    private Customer mapToEntity(CustomerDTO dto) {
-        Customer customer = new Customer();
-        customer.setName(dto.getName());
-        customer.setLastName(dto.getLastName());
-        customer.setEmail(dto.getEmail());
-        customer.setPhone(dto.getPhone());
-        customer.setCpf(dto.getCpf());
-
-        if (dto.getAddress() != null) {
-            Address address = new Address();
-            address.setStreet(dto.getAddress().getStreet());
-            address.setCity(dto.getAddress().getCity());
-            address.setState(dto.getAddress().getState());
-            address.setDistrict(dto.getAddress().getDistrict());
-            address.setZipCode(dto.getAddress().getZipCode());
-            address.setCustomer(customer);
-
-            customer.setAddress(address);
-        }
-
-        return customer;
-    }
-
-    private void updateCustomerData(Customer customer, CustomerDTO dto) {
-        customer.setName(dto.getName());
-        customer.setLastName(dto.getLastName());
-        customer.setEmail(dto.getEmail());
-        customer.setPhone(dto.getPhone());
-        customer.setCpf(dto.getCpf());
-
-        Address address = customer.getAddress();
-
-        if (address == null) {
-            address = new Address();
-            address.setCustomer(customer);
-        }
-
-        AddressDTO addressDTO = dto.getAddress();
-        address.setStreet(addressDTO.getStreet());
-        address.setState(addressDTO.getState());
-        address.setCity(addressDTO.getCity());
-        address.setDistrict(addressDTO.getDistrict());
-        address.setZipCode(addressDTO.getZipCode());
-
-        customer.setAddress(address);
-    }
 
 }

@@ -1,8 +1,6 @@
 package br.com.studiyng.crud.jz.controller;
 
 import br.com.studiyng.crud.jz.model.dto.CustomerDTO;
-import br.com.studiyng.crud.jz.model.entity.Customer;
-import br.com.studiyng.crud.jz.model.mapper.CustomerMapper;
 import br.com.studiyng.crud.jz.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
