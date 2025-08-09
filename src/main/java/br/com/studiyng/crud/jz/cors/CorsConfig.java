@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // libera todas as rotas
-                        .allowedOrigins("http://localhost:5173") // ou o domínio do seu frontend
+                        .allowedOrigins("https://register-customer-web.vercel.app/") // ou o domínio do seu frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true); // se precisar enviar cookies/autenticação
